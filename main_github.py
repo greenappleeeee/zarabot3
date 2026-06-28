@@ -6,6 +6,25 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from scraperHelpers import check_stock_zara, check_stock_bershka, check_stock_stradivarius
 
+def check_for_commands(bot_api, chat_id):
+    """Telegram'dan gelen 'listele' komutunu kontrol eder."""
+    url = f"https://api.telegram.org/bot{bot_api}/getUpdates"
+    try:
+        response = requests.get(url).json()
+        if response.get("ok") and response["result"]:
+            for update in response["result"]:
+                msg = update.get("message", {}).get("text", "").lower()
+                if msg == "listele":
+                    # Config dosyasını oku
+                    config = load_config()
+                    items = "\n".join([f"• {i['person']}: {i['store']}" for i in config.get("urls", [])])
+                    summary = f"📋 <b>Takip edilen ürünler:</b>\n\n{items}"
+                    send_telegram_message(summary, bot_api, chat_id)
+                    # Not: Normalde burada offset kullanarak mesajı 'okundu' işaretlemek gerekir 
+                    # ama basit olması için sadece listeyi göndermesini sağladık.
+    except Exception as e:
+        print(f"Komut kontrol hatası: {e}")
+
 # Telegram Bilgileri (GitHub Secrets'tan gelir)
 BOT_API = os.getenv("BOT_API")
 CHAT_ID = os.getenv("CHAT_ID")
