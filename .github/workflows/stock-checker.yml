@@ -15,6 +15,7 @@ jobs:
     - name: ⚡ Checkout (sparse)
       uses: actions/checkout@v4
       with:
+        fetch-depth: 0
         sparse-checkout: |
           main_github.py
           scraperHelpers.py
