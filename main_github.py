@@ -12,6 +12,23 @@ from webdriver_manager.chrome import ChromeDriverManager
 import os
 import requests
 from scraperHelpers import check_stock_zara, check_stock_bershka, check_stock_stradivarius
+import requests
+
+def get_telegram_updates(bot_api, chat_id):
+    url = f"https://api.telegram.org/bot{bot_api}/getUpdates"
+    response = requests.get(url).json()
+    if response.get("ok"):
+        for result in response["result"]:
+            message = result.get("message", {}).get("text", "")
+            if message == "/listele":
+                send_telegram_message("Takip ettiğin ürünler:\n" + format_product_list(), bot_api, chat_id)
+
+def format_product_list():
+    config = load_config()
+    text = ""
+    for item in config["urls"]:
+        text += f"🛍️ {item['person']} - {item['url']}\n"
+    return text
 
 def load_config():
     """Config dosyasını yükle"""
