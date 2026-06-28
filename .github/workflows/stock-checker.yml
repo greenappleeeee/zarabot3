@@ -1,8 +1,12 @@
 name: ⚡ Super Fast Stock Checker
 
 on:
-  # Sadece manuel tetikleme aktif - otomatik çalışma devre dışı
+  push:
+    branches:
+      - main
   workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'  # Bu satır, GitHub Actions'ın her 5 dakikada bir çalışmasını sağlar
 
 jobs:
   super-fast-stock-check:
