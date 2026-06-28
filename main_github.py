@@ -232,18 +232,42 @@ def check_single_item(driver, item, telegram_enabled, bot_api, chat_id, config):
         print(f"❌ Error checking {url}: {e}")
         return False
 
+def check_for_list_command(bot_api, chat_id):
+    """Telegram'dan 'listele' komutunu kontrol et"""
+    url = f"https://api.telegram.org/bot{bot_api}/getUpdates"
+    try:
+        response = requests.get(url, timeout=10).json()
+        if response.get("ok"):
+            for msg in response.get("result", []):
+                text = msg.get("message", {}).get("text", "").lower()
+                if text == "listele":
+                    config = load_config()
+                    items = config.get("urls", [])
+                    reply = "📋 <b>Takip Edilen Ürünler:</b>\n\n"
+                    for i, item in enumerate(items, 1):
+                        reply += f"{i}. {item['store'].upper()} - {item['person']}\n"
+                    send_telegram_message(reply, bot_api, chat_id)
+    except Exception as e:
+        print(f"Komut kontrolü hatası: {e}")
+
 def main():
     """Super Fast Stock Checker - GitHub Actions Optimized"""
     print("⚡ SUPER FAST Stock Checker (Every 5 min)")
     print(f"🚀 Start: {time.strftime('%H:%M:%S')}")
-    
-    # Config yükle
+
+    # 1. 3. Madde: Telegram listele komutunu kontrol et
+    telegram_enabled, bot_api, chat_id = setup_telegram()
+    if telegram_enabled:
+        check_for_list_command(bot_api, chat_id)
+
+    # 2. Config yükle (Bu satır her seferinde güncel okur)
     config = load_config()
     if not config:
         print("❌ Failed to load configuration")
         return
         
     urls_to_check = config.get("urls", [])
+    # ... (kodun devamı)
     
     if not urls_to_check:
         print("❌ No URLs to check in configuration")
