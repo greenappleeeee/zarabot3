@@ -55,6 +55,8 @@ def load_config():
 
 def main():
     print("🚀 Bot başlatılıyor...")
+    check_for_commands(BOT_API, CHAT_ID) # Listele komutunu burada dinliyor
+    # ... botun geri kalanı ...
     
     # Chrome ayarları (Bot algılanmaması için en kararlı mod)
     opts = Options()
