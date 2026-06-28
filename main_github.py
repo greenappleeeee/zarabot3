@@ -233,7 +233,7 @@ def check_single_item(driver, item, telegram_enabled, bot_api, chat_id, config):
         return False
 
 def check_for_list_command(bot_api, chat_id):
-    """Telegram'dan 'listele' komutunu kontrol et"""
+    """Telegram'dan '/listele' komutunu kontrol et"""
     # Offset kullanmadan son 10 mesajı al, en taze olanı kontrol et
     url = f"https://api.telegram.org/bot{bot_api}/getUpdates?limit=10"
     try:
