@@ -188,7 +188,7 @@ def check_stock_stradivarius(driver, sizes_to_check):
                 if "disabled" not in parent.get_attribute("class"):
                     print(f"✅ Stradivarius Özel Modu: {size_label} bulundu, ekleniyor.")
                     driver.execute_script("arguments[0].click();", parent)
-                    time.sleep(2)
+                    time.sleep(4)
                     return size_label
     except:
         pass # Eğer bu özel yapı çalışmazsa, bot aşağıya, senin o uzun orijinal koduna devam eder!
@@ -240,7 +240,7 @@ def check_stock_stradivarius(driver, sizes_to_check):
 
         # Wait for the size selector to appear
         print("Waiting for sizes to appear...")
-        time.sleep(2)  # Give some time for size selector to load
+        time.sleep(4)  # Give some time for size selector to load
         
         # Try different size selector patterns for Stradivarius
         size_selectors = [
