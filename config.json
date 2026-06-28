@@ -3,7 +3,9 @@
     {
       "store": "zara",
       "url": "https://www.zara.com/tr/tr/cift-tarafli-cift-yuzlu-ceket-p06318254.html?v1=503986644",
-      "sizes": ["S"],
+      "sizes": [
+        "S"
+      ],
       "person": "çift yüzlü ceket"
     },
     {
@@ -26,14 +28,11 @@
     {
       "store": "stradivarius",
       "url": "https://www.stradivarius.com/tr/basic-regular-fit-kal%C4%B1n-tisort-l06516883?categoryId=1020486158&colorId=050&pelement=496628792",
-      "sizes": ["M","S"],
+      "sizes": [
+        "M",
+        "S"
+      ],
       "person": "st tişört"
-    },
-    {
-      "store": "zara",
-      "url": "https://www.zara.com/tr/tr/rustik-cizgili-pelerin-kollu-t-shirt-p02298016.html?v1=545224627&v2=2580457",
-      "sizes": ["S","36"],
-      "person": "tişört"
     },
     {
       "store": "stradivarius",
