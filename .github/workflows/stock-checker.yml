@@ -1,17 +1,16 @@
 name: ⚡ Super Fast Stock Checker
 
 on:
+  # Sadece manuel tetikleme aktif - otomatik çalışma devre dışı
   workflow_dispatch:
-  schedule:
-    - cron: '*/5 * * * *' # 5 dakikada bir çalışması için bu şart
 
 jobs:
   super-fast-stock-check:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 8  # Maximum 8 dakika - 9 ürün için yeterli
     permissions:
-      contents: write  # Git push yapabilmek için ZORUNLU
-
+      contents: write  # Git commit + push permissions
+    
     steps:
     - name: ⚡ Checkout (sparse)
       uses: actions/checkout@v4
@@ -30,16 +29,20 @@ jobs:
         cache: 'pip'
         cache-dependency-path: 'requirements.txt'
         
+    - name: ⚡ Chrome (pre-installed)
+      run: |
+        google-chrome --version || sudo apt-get update && sudo apt-get install -y google-chrome-stable
+        
     - name: ⚡ Install Dependencies (cached)
-      timeout-minutes: 2 # Burayı 2 dakika ile sınırla, takılırsa hemen geçsin
       run: |
         pip install -r requirements.txt
         
     - name: ⚡ Fast Stock Check
       run: |
         echo "⚡ Super Fast Check - $(date '+%H:%M:%S')"
-        python main_github.py
+        timeout 360 python main_github.py || echo "⚠️ Timeout or completed"
       env:
         BOT_API: ${{ secrets.BOT_API }}
         CHAT_ID: ${{ secrets.CHAT_ID }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PYTHONUNBUFFERED: 1
+        CHROME_NO_SANDBOX: 1 
