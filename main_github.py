@@ -90,7 +90,7 @@ def setup_telegram():
     return True, BOT_API, CHAT_ID
 
 def send_telegram_message(message, bot_api, chat_id):
-    """Telegram message gönder"""
+    """Telegram message gönder (Linkler tıklanabilir şekilde)"""
     if not bot_api or not chat_id:
         print("⚠️ Telegram message skipped (missing credentials).")
         return False
@@ -99,7 +99,8 @@ def send_telegram_message(message, bot_api, chat_id):
     payload = {
         "chat_id": chat_id,
         "text": message,
-        "parse_mode": "HTML"
+        "parse_mode": "HTML",
+        "disable_web_page_preview": False  # Linklerin tıklanabilir olmasını sağlar
     }
     
     try:
@@ -110,7 +111,7 @@ def send_telegram_message(message, bot_api, chat_id):
     except requests.exceptions.RequestException as e:
         print(f"❌ Failed to send Telegram message: {e}")
         return False
-
+        
 def setup_chrome_driver():
     """Super fast Chrome driver setup for GitHub Actions"""
     chrome_options = Options()
