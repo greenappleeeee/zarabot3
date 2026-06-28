@@ -12,7 +12,19 @@ from webdriver_manager.chrome import ChromeDriverManager
 import os
 import requests
 from scraperHelpers import check_stock_zara, check_stock_bershka, check_stock_stradivarius
-import requests
+
+def check_telegram_commands(bot_api, chat_id):
+    url = f"https://api.telegram.org/bot{bot_api}/getUpdates"
+    response = requests.get(url).json()
+    
+    if response.get("ok"):
+        for result in response["result"]:
+            msg = result.get("message", {}).get("text", "")
+            # Mesaj /ekle ile başlıyorsa parçala ve config'e ekle
+            if msg.startswith("/ekle "):
+                _, new_url, name = msg.split(" ", 2)
+                add_new_product_to_config(new_url, name)
+                send_telegram_message(f"✅ {name} için {new_url} listeye eklendi!", bot_api, chat_id)
 
 def get_telegram_updates(bot_api, chat_id):
     url = f"https://api.telegram.org/bot{bot_api}/getUpdates"
@@ -39,6 +51,26 @@ def load_config():
     except FileNotFoundError:
         print("❌ config.json file not found!")
         return None
+
+def add_new_product_to_config(new_url, name):
+    config = load_config()
+    # Not: Burada sadece 'zara' eklenmiş, istersen URL'yi kontrol edip 
+    # 'bershka' veya 'stradivarius' olup olmadığını da seçtirebilirsin.
+    new_item = {"store": "zara", "url": new_url, "sizes": ["S"], "person": name}
+    config["urls"].append(new_item)
+    
+    # Dosyayı kaydet
+    with open("config.json", "w", encoding='utf-8') as f:
+        json.dump(config, f, indent=2, ensure_ascii=False)
+    
+    # GitHub'a push yap (GitHub Actions ortamında olduğumuzu varsayıyoruz)
+    try:
+        subprocess.run(['git', 'add', 'config.json'], check=True)
+        subprocess.run(['git', 'commit', '-m', 'Telegram uzerinden yeni urun eklendi [skip ci]'], check=True)
+        subprocess.run(['git', 'push'], check=True)
+        print("✅ Config güncellendi ve GitHub'a push edildi.")
+    except Exception as e:
+        print(f"❌ Git push hatası: {e}")
 
 def save_config(config):
     """Config dosyasını kaydet ve GitHub'a push et"""
