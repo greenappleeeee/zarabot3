@@ -7,15 +7,21 @@ def check_stock_zara(driver, sizes_to_check):
         wait = WebDriverWait(driver, 10)
         wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "ul[data-qa-action='size-selector-sizes']")))
         buttons = driver.find_elements(By.CSS_SELECTOR, "button[data-qa-action^='size-selector']")
+        
         for btn in buttons:
             label = btn.text.strip()
-            # Senin verdiğin listeden herhangi biri, butondaki yazının içinde geçiyor mu?
+            status = btn.get_attribute("data-qa-action")
+            
+            # LOG EKLEME: Botun sitede ne gördüğünü yazdırıyoruz
+            print(f"DEBUG: Bulunan beden: '{label}', Status: '{status}'")
+            
             if any(size in label for size in sizes_to_check):
-                status = btn.get_attribute("data-qa-action")
                 if status and ("in-stock" in status or "low-on-stock" in status):
                     return label
         return None
-    except: return None
+    except Exception as e:
+        print(f"DEBUG: Hata: {e}")
+        return None
 
 def check_stock_stradivarius(driver, sizes_to_check):
     return check_stock_zara(driver, sizes_to_check)
