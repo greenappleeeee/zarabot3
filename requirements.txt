@@ -1,0 +1,5 @@
+selenium==4.11.2
+webdriver-manager
+requests
+certifi
+urllib3
