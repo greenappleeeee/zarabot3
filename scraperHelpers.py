@@ -179,6 +179,20 @@ def watsonsChecker(driver):
 
 def check_stock_stradivarius(driver, sizes_to_check):
     try:
+        # Kod çalışır çalışmaz önce Stradivarius'un özel yapısını kontrol et
+        size_elements = driver.find_elements(By.CSS_SELECTOR, ".size-name")
+        for element in size_elements:
+            size_label = element.get_attribute("data-text")
+            if size_label and size_label.upper() in [s.upper() for s in sizes_to_check]:
+                parent = element.find_element(By.XPATH, "./..")
+                if "disabled" not in parent.get_attribute("class"):
+                    print(f"✅ Stradivarius Özel Modu: {size_label} bulundu, ekleniyor.")
+                    driver.execute_script("arguments[0].click();", parent)
+                    time.sleep(2)
+                    return size_label
+    except:
+        pass # Eğer bu özel yapı çalışmazsa, bot aşağıya, senin o uzun orijinal koduna devam eder!
+    try:
         # GitHub Actions için optimize edilmiş timeout
         is_github_actions = os.getenv('GITHUB_ACTIONS')
         timeout = 10 if is_github_actions else 60
