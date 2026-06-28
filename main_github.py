@@ -234,19 +234,28 @@ def check_single_item(driver, item, telegram_enabled, bot_api, chat_id, config):
 
 def check_for_list_command(bot_api, chat_id):
     """Telegram'dan 'listele' komutunu kontrol et"""
+    # Mesajları al
     url = f"https://api.telegram.org/bot{bot_api}/getUpdates"
     try:
         response = requests.get(url, timeout=10).json()
         if response.get("ok"):
-            for msg in response.get("result", []):
-                text = msg.get("message", {}).get("text", "").lower()
-                if text == "listele":
+            messages = response.get("result", [])
+            for msg in messages:
+                message_text = msg.get("message", {}).get("text", "").lower()
+                msg_id = msg.get("update_id")
+                
+                if message_text == "listele":
                     config = load_config()
                     items = config.get("urls", [])
                     reply = "📋 <b>Takip Edilen Ürünler:</b>\n\n"
                     for i, item in enumerate(items, 1):
                         reply += f"{i}. {item['store'].upper()} - {item['person']}\n"
+                    
                     send_telegram_message(reply, bot_api, chat_id)
+                    
+                    # ÖNEMLİ: İşlenen mesajı Telegram'a "okundu" olarak bildir
+                    requests.get(f"https://api.telegram.org/bot{bot_api}/getUpdates?offset={msg_id + 1}")
+                    
     except Exception as e:
         print(f"Komut kontrolü hatası: {e}")
 
