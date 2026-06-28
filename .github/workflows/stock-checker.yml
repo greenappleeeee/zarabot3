@@ -14,15 +14,11 @@ jobs:
       contents: write  # Git commit + push permissions
     
     steps:
-    - name: ⚡ Checkout (sparse)
+    - name: ⚡ Checkout (full)
       uses: actions/checkout@v4
       with:
-        sparse-checkout: |
-          main_github.py
-          scraperHelpers.py
-          config.json
-          requirements.txt
-        sparse-checkout-cone-mode: false
+        fetch-depth: 0  # Tüm geçmişi ve Git ayarlarını indir
+        token: ${{ secrets.GITHUB_TOKEN }} # Push yetkisi için token ekle
       
     - name: ⚡ Python + Cache
       uses: actions/setup-python@v4
