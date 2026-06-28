@@ -285,6 +285,28 @@ def main():
     """Super Fast Stock Checker - GitHub Actions Optimized"""
     print("⚡ SUPER FAST Stock Checker (Every 5 min)")
     print(f"🚀 Start: {time.strftime('%H:%M:%S')}")
+
+    # Bot API ve Chat ID'ni yüklediğin yerin hemen altına
+def check_telegram_commands():
+    # BOT_API ve CHAT_ID'nin yüklü olduğundan emin ol
+    url = f"https://api.telegram.org/bot{os.getenv('BOT_API')}/getUpdates"
+    try:
+        response = requests.get(url).json()
+        if response.get("ok"):
+            for result in response["result"]:
+                msg = result.get("message", {}).get("text", "")
+                # Örnek kullanım: /ekle [URL] [İSİM]
+                if msg.startswith("/ekle "):
+                    parts = msg.split(" ", 2)
+                    if len(parts) >= 3:
+                        new_url, name = parts[1], parts[2]
+                        add_new_product_to_config(new_url, name)
+                        # İşlem sonrası eski mesajları temizlemek için offset kullanman gerekebilir
+    except Exception as e:
+        print(f"Telegram komut hatası: {e}")
+
+# Şimdi main bloğunun en başına bunu ekle:
+check_telegram_commands()
     
     # Config yükle
     config = load_config()
