@@ -22,18 +22,24 @@ def load_config():
         return None
 
 def save_config_and_push(config):
-    """Dosyayı kaydet ve GitHub'a gönder"""
     with open("config.json", "w", encoding='utf-8') as f:
         json.dump(config, f, indent=2, ensure_ascii=False)
     
     if os.getenv('GITHUB_ACTIONS'):
         try:
+            # Kimlik tanıt
             subprocess.run(['git', 'config', '--global', 'user.name', 'StockBot'], check=True)
             subprocess.run(['git', 'config', '--global', 'user.email', 'actions@github.com'], check=True)
-            subprocess.run(['git', 'add', 'config.json'], check=True)
-            subprocess.run(['git', 'commit', '-m', 'Telegram uzerinden guncelleme [skip ci]'], check=True)
-            subprocess.run(['git', 'push'], check=True)
-            print("✅ GitHub'a başarıyla push edildi.")
+            
+            # Değişiklik var mı kontrol et
+            result = subprocess.run(['git', 'status', '--porcelain'], capture_output=True, text=True)
+            if "config.json" in result.stdout:
+                subprocess.run(['git', 'add', 'config.json'], check=True)
+                subprocess.run(['git', 'commit', '-m', 'Telegram uzerinden guncelleme [skip ci]'], check=True)
+                subprocess.run(['git', 'push'], check=True)
+                print("✅ GitHub'a başarıyla push edildi.")
+            else:
+                print("⚠️ Config dosyasında değişiklik yok, push edilmedi.")
         except Exception as e:
             print(f"❌ Git push hatası: {e}")
 
