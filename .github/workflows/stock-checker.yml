@@ -3,8 +3,6 @@ name: ⚡ Super Fast Stock Checker
 on:
   # Sadece manuel tetikleme aktif - otomatik çalışma devre dışı
   workflow_dispatch:
-  schedule:
-    - cron: '*/5 * * * *' # Her 5 dakikada bir çalışır
 
 jobs:
   super-fast-stock-check:
@@ -14,11 +12,15 @@ jobs:
       contents: write  # Git commit + push permissions
     
     steps:
-    - name: ⚡ Checkout (full)
+    - name: ⚡ Checkout (sparse)
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Tüm geçmişi ve Git ayarlarını indir
-        token: ${{ secrets.GITHUB_TOKEN }} # Push yetkisi için token ekle
+        sparse-checkout: |
+          main_github.py
+          scraperHelpers.py
+          config.json
+          requirements.txt
+        sparse-checkout-cone-mode: false
       
     - name: ⚡ Python + Cache
       uses: actions/setup-python@v4
